@@ -14,3 +14,6 @@ The tasks performed in implementing the project are:
 3. Performed hyperparameter tuning on all 5 models using ARC(A Root Cluster for Research into Scalable Computer Systems) and the results showed a marked improvement.
 
 4. Used Arima (AutoRegressive Integrated Moving Average) and BSTS (Bayesian Structural Time Series) to capture the seasonal effects and trends in the data which helped in forecasting the prices of the listings with great accuracy.
+
+
+Dataset: https://drive.google.com/drive/folders/1JgfEKq4Uz6XJ5MYDYvfzCM4Z3c-Ew86j?usp=sharing
