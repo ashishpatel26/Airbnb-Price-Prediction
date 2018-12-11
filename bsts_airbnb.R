@@ -28,24 +28,22 @@ pr <- price$price
 #mode(pr)
 #class(pr)
 
-
-#Create a new variable for BSTS Model
 bsts_response <- price$price
 (model_components <- list())
-AddLocalLinearTrend #prefered trend selector assuming there is a linear regressions between time series
+AddLocalLinearTrend 
 plot(pr, ylab = "")
 
 price = subset(price, select = -c(available))
 
 
-#Trend component
+#Trend - local trend after analaysing
 summary(model_components <- AddLocalLinearTrend(model_components, 
                                                 y = pr))
-#seasonal component
+#seasonal  - weeks and days of week
 summary(model_components <- AddSeasonal(model_components, y = pr, 
                                         nseasons  = 52, season.duration = 7))
 
-#Construct bsts model that only takes into account seasonality and trend
+#seasonlaity and trend
 st_bsts_fit <- bsts(pr, model_components, niter = 1000)
 
 
@@ -53,12 +51,11 @@ st_bsts_fit <- bsts(pr, model_components, niter = 1000)
 pred <- predict(st_bsts_fit, horizon = 120, quantiles = c(.05, .95))
 plot(pred)
 
-#Extract bsts prediction of seasonality, tend and cycle into Dataframe.
 mu_bsts <- pred$mean
 
 
 
-#Construct BSTS model using seasonality & trend and Xi regressors
+# seasonality & trend and  regressors
 bsts_fit <- bsts(pr ~ ., state.specification = model_components, 
                  data = price, niter = 1000)
 
@@ -68,7 +65,6 @@ plot(bsts_fit, "coef")
 
 colMeans(bsts_fit$coefficients)
 
-#view coeffs
 summary(bsts_fit)
 
 #cumulative absolute one step ahead prediction errors
@@ -76,7 +72,6 @@ CompareBstsModels(list("ST" = st_bsts_fit,
                        "ST + reg" = bsts_fit),
                   colors = c("black", "red"))
 
-#Construct BSTS model using seasonality & trend and Xi regressors forcing inclusion
 bsts_fit1 <- bsts(pr ~ ., state.specification = model_components, 
                   data = price, niter = 1000, expected.model.size = 10) #passed to spike and slab
 
@@ -88,9 +83,9 @@ colMeans(bsts_fit1$coefficients)
 
 
 
-#compare the BSTS models
-CompareBstsModels(list("ST" = st_bsts_fit,
-                       "ST + reg" = bsts_fit,
+#comapre all three models
+CompareBstsModels(list("Seasonal+Trend" = st_bsts_fit,
+                       "Seasonal+Trend + reg" = bsts_fit,
                        "ST + forced reg" = bsts_fit1),
                   colors = c("black", "red", "blue"))
 
